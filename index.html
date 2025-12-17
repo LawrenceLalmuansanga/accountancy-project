@@ -2,81 +2,153 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Android/iOS specific meta tags -->
-    <meta name="format-detection" content="telephone=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<!-- Disable translation -->
-<meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Accountancy Projects | Warning</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Disable mobile features -->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
 </head>
 <body>
-    <div class="warning-container">
-        <div class="warning-card">
+    <div class="container">
+        <div class="warning-page">
+            <!-- Header -->
             <div class="warning-header">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h1>Accountancy Projects</h1>
+                </div>
+                <div class="security-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Protected Content</span>
+                </div>
+            </div>
+
+            <!-- Main Warning Card -->
+            <div class="warning-card">
                 <div class="warning-icon">
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
-                <h1>Important Notice</h1>
-            </div>
-            
-            <div class="warning-content">
-                <div class="warning-message">
-                    <div class="simple-warning">
+                
+                <div class="warning-title">
+                    <h2>Important Notice</h2>
+                    <p class="subtitle">Please read carefully before proceeding</p>
+                </div>
+
+                <div class="warning-content">
+                    <div class="warning-box">
                         <i class="fas fa-info-circle"></i>
                         <div class="warning-text">
-                            <h3>Please Read Carefully</h3>
-                            <p>The answers provided in these Accountancy Projects are <strong>not guaranteed to be perfect or error-free</strong>. Use them as a reference only, and always verify with your own understanding and teacher's guidance.</p>
+                            <h3>Disclaimer</h3>
+                            <p>The answers provided in these Accountancy Projects are <strong>not guaranteed to be perfect or error-free</strong>. These are student projects and may contain mistakes. Use them as a reference only, and always verify with your own understanding and teacher's guidance.</p>
                         </div>
                     </div>
-                </div>
-                
-                <div class="years-available">
-                    <h3><i class="fas fa-calendar-alt"></i> Available Project Years</h3>
-                    <div class="year-badges">
-                        <span class="year-badge">2018</span>
-                        <span class="year-badge">2019</span>
-                        <span class="year-badge disabled">2020</span>
-                        <span class="year-badge disabled">2021</span>
-                        <span class="year-badge">2022</span>
-                        <span class="year-badge">2023</span>
-                        <span class="year-badge">2024</span>
-                        <span class="year-badge">2025</span>
+
+                    <div class="years-section">
+                        <h3><i class="fas fa-calendar-alt"></i> Available Project Years</h3>
+                        <div class="year-list">
+                            <span class="year active">2018</span>
+                            <span class="year active">2019</span>
+                            <span class="year disabled">2020</span>
+                            <span class="year disabled">2021</span>
+                            <span class="year active">2022</span>
+                            <span class="year active">2023</span>
+                            <span class="year active">2024</span>
+                            <span class="year active">2025</span>
+                        </div>
+                        <p class="note"><i class="fas fa-info-circle"></i> Note: 2020 & 2021 projects are currently unavailable</p>
                     </div>
-                    <p class="note">Note: 2020 & 2021 projects are currently unavailable</p>
+
+                    <div class="features">
+                        <div class="feature">
+                            <i class="fas fa-eye"></i>
+                            <span>Read-only view</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-ban"></i>
+                            <span>Download disabled</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>Mobile & PC friendly</span>
+                        </div>
+                    </div>
+
+                    <div class="agreement-box">
+                        <label class="checkbox">
+                            <input type="checkbox" id="agreeCheckbox">
+                            <span class="checkmark"></span>
+                            <span class="text">I understand that these answers may contain errors and I will use them only as a reference, not for direct copying.</span>
+                        </label>
+                    </div>
                 </div>
-                
-                <div class="acknowledgement">
-                    <label class="checkbox-container">
-                        <input type="checkbox" id="acknowledge">
-                        <span class="checkmark"></span>
-                        <span>I understand that these answers may contain errors and I will use them only as a reference, not for direct copying.</span>
-                    </label>
+
+                <div class="action-buttons">
+                    <button id="cancelBtn" class="btn btn-outline">
+                        <i class="fas fa-times"></i>
+                        <span>Cancel</span>
+                    </button>
+                    <button id="proceedBtn" class="btn btn-primary" disabled>
+                        <i class="fas fa-arrow-right"></i>
+                        <span>Proceed to Projects</span>
+                    </button>
                 </div>
             </div>
-            
-            <div class="warning-actions">
-                <button id="declineBtn" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
-                <button id="proceedBtn" class="btn btn-primary" disabled>
-                    <i class="fas fa-arrow-right"></i> Proceed to Projects
-                </button>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p><i class="fas fa-lock"></i> Content is protected. Screenshots and downloads are restricted.</p>
+                <p class="copyright">© Accountancy Projects Viewer • For Academic Reference Only</p>
             </div>
-        </div>
-        
-        <div class="footer-note">
-            <p><i class="fas fa-shield-alt"></i> Projects are displayed in read-only format. Downloading is disabled.</p>
         </div>
     </div>
-    
+
     <script src="script.js"></script>
+    <script>
+        // Warning page specific script
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkbox = document.getElementById('agreeCheckbox');
+            const proceedBtn = document.getElementById('proceedBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            
+            // Enable/disable proceed button
+            checkbox.addEventListener('change', function() {
+                proceedBtn.disabled = !this.checked;
+                if (this.checked) {
+                    proceedBtn.classList.add('enabled');
+                } else {
+                    proceedBtn.classList.remove('enabled');
+                }
+            });
+            
+            // Proceed button click
+            proceedBtn.addEventListener('click', function() {
+                if (!this.disabled) {
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Loading...</span>';
+                    setTimeout(() => {
+                        window.location.href = 'viewer.html';
+                    }, 800);
+                }
+            });
+            
+            // Cancel button click
+            cancelBtn.addEventListener('click', function() {
+                this.innerHTML = '<i class="fas fa-times"></i><span>Closing...</span>';
+                setTimeout(() => {
+                    window.close();
+                    // If window doesn't close, redirect to blank
+                    window.location.href = 'about:blank';
+                }, 1000);
+            });
+        });
+    </script>
 </body>
 </html>
