@@ -22,12 +22,38 @@ const PROJECTS = {
 // Available years (2018, 2019, 2022-2025)
 const AVAILABLE_YEARS = ['2018', '2019', '2022', '2023', '2024', '2025'];
 
+// Base path for images - works for both local and GitHub Pages
+const getBasePath = () => {
+    // Check if we're running on GitHub Pages
+    const isGitHubPages = window.location.hostname.includes('github.io');
+    // Check if we're running locally
+    const isLocal = window.location.protocol === 'file:';
+    
+    if (isLocal) {
+        // Local file system
+        return './pdf/';
+    } else if (isGitHubPages) {
+        // GitHub Pages - relative to root
+        return './pdf/';
+    } else {
+        // Other hosting
+        return './pdf/';
+    }
+};
+
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Page loaded, initializing...');
+    
     // Check if we're on viewer page
     if (document.getElementById('yearsGrid')) {
+        console.log('Viewer page detected');
         initializeViewerPage();
         initializeProtection();
+        testImageAccess(); // Test image access immediately
+    } else if (document.querySelector('.warning-page')) {
+        console.log('Warning page detected');
+        // Initialize warning page if needed
     }
 });
 
@@ -46,14 +72,14 @@ function initializeViewerPage() {
     
     // Initialize modal controls
     initializeModal();
-    
-    // Test if images are accessible
-    testImageAccess();
 }
 
 function createYearCards() {
     const yearsGrid = document.getElementById('yearsGrid');
-    if (!yearsGrid) return;
+    if (!yearsGrid) {
+        console.error('yearsGrid element not found!');
+        return;
+    }
     
     // Clear existing content
     yearsGrid.innerHTML = '';
@@ -104,6 +130,8 @@ function createYearCards() {
 }
 
 function setupEventListeners() {
+    console.log('Setting up event listeners...');
+    
     // Year card clicks
     document.addEventListener('click', function(e) {
         const viewBtn = e.target.closest('.btn-view');
@@ -111,9 +139,11 @@ function setupEventListeners() {
         
         if (viewBtn) {
             const year = viewBtn.dataset.year;
+            console.log(`View button clicked for year: ${year}`);
             openViewer(year);
         } else if (yearCard && !viewBtn) {
             const year = yearCard.dataset.year;
+            console.log(`Year card clicked for year: ${year}`);
             openViewer(year);
         }
     });
@@ -125,16 +155,19 @@ function setupEventListeners() {
     
     if (modalClose) {
         modalClose.addEventListener('click', closeViewer);
+        console.log('Modal close button listener added');
     }
     
     if (prevBtn) {
         prevBtn.addEventListener('click', function() {
+            console.log('Previous button clicked');
             if (!isLoading) navigatePage(-1);
         });
     }
     
     if (nextBtn) {
         nextBtn.addEventListener('click', function() {
+            console.log('Next button clicked');
             if (!isLoading) navigatePage(1);
         });
     }
@@ -144,6 +177,7 @@ function setupEventListeners() {
     if (modal) {
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
+                console.log('Modal background clicked, closing viewer');
                 closeViewer();
             }
         });
@@ -155,20 +189,33 @@ function setupEventListeners() {
         
         switch(e.key) {
             case 'ArrowLeft':
+                console.log('Left arrow pressed');
                 if (!isLoading) navigatePage(-1);
+                e.preventDefault();
                 break;
             case 'ArrowRight':
+                console.log('Right arrow pressed');
                 if (!isLoading) navigatePage(1);
+                e.preventDefault();
                 break;
             case 'Escape':
+                console.log('Escape pressed, closing viewer');
                 closeViewer();
+                e.preventDefault();
+                break;
+            case ' ':
+                // Space bar - go to next page
+                console.log('Space bar pressed');
+                if (!isLoading) navigatePage(1);
+                e.preventDefault();
                 break;
         }
     });
+    
+    console.log('Event listeners setup complete');
 }
 
 function initializeModal() {
-    // Nothing to do here for now
     console.log('Modal initialized');
 }
 
@@ -180,20 +227,24 @@ function openViewer(year) {
     console.log(`Opening viewer for year: ${year}`);
     
     if (!PROJECTS[year]) {
-        alert('Project data not found for year ' + year);
+        console.error(`Project data not found for year: ${year}`);
+        showErrorMessage(`Project data not found for year ${year}`);
         return;
     }
     
     currentYear = year;
-    currentPage = 1;
+    currentPage = 1; // ALWAYS START AT PAGE 1
     totalPages = PROJECTS[year].pages;
     isViewerOpen = true;
+    
+    console.log(`Year: ${year}, Starting page: ${currentPage}, Total pages: ${totalPages}`);
     
     // Show modal
     const modal = document.getElementById('imageViewerModal');
     if (modal) {
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
+        console.log('Modal displayed');
     }
     
     // Update UI
@@ -213,6 +264,7 @@ function closeViewer() {
     if (modal) {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
+        console.log('Modal hidden');
     }
     
     // Reset state
@@ -225,6 +277,7 @@ function closeViewer() {
     if (img) {
         img.src = '';
         img.classList.remove('loaded');
+        console.log('Image cleared');
     }
     
     // Hide loading spinner
@@ -237,10 +290,17 @@ function closeViewer() {
     
     // Disable protection
     disableAdvancedProtection();
+    
+    console.log('Viewer closed and reset');
 }
 
 function updateViewerUI() {
-    if (!currentYear) return;
+    if (!currentYear) {
+        console.warn('updateViewerUI called but currentYear is null');
+        return;
+    }
+    
+    console.log(`Updating UI for page ${currentPage} of ${totalPages}`);
     
     // Update title
     const title = document.getElementById('modalTitle');
@@ -258,54 +318,88 @@ function updateViewerUI() {
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     
-    if (prevBtn) prevBtn.disabled = currentPage === 1;
-    if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+    if (prevBtn) {
+        prevBtn.disabled = currentPage === 1;
+        console.log(`Previous button disabled: ${prevBtn.disabled}`);
+    }
+    
+    if (nextBtn) {
+        nextBtn.disabled = currentPage === totalPages;
+        console.log(`Next button disabled: ${nextBtn.disabled}`);
+    }
 }
 
 function navigatePage(direction) {
-    if (isLoading) return;
+    if (isLoading) {
+        console.log('Page navigation blocked: still loading');
+        return;
+    }
     
     const newPage = currentPage + direction;
     
+    console.log(`Attempting navigation from page ${currentPage} to ${newPage} (direction: ${direction})`);
+    
     // Validate page bounds
-    if (newPage < 1 || newPage > totalPages) {
+    if (newPage < 1) {
+        console.log('Cannot navigate before page 1');
+        return;
+    }
+    
+    if (newPage > totalPages) {
+        console.log(`Cannot navigate beyond page ${totalPages}`);
         return;
     }
     
     currentPage = newPage;
+    console.log(`Navigated to page ${currentPage}`);
+    
     updateViewerUI();
     loadCurrentPage();
 }
 
 function loadCurrentPage() {
-    if (!currentYear) return;
+    if (!currentYear) {
+        console.error('loadCurrentPage called but currentYear is null');
+        return;
+    }
     
     isLoading = true;
+    
+    console.log(`Loading page ${currentPage} for year ${currentYear}`);
     
     const img = document.getElementById('projectImage');
     const spinner = document.getElementById('loadingSpinner');
     const errorMsg = document.getElementById('errorMessage');
     
     // Show loading spinner
-    if (spinner) spinner.style.display = 'block';
+    if (spinner) {
+        spinner.style.display = 'block';
+        console.log('Loading spinner shown');
+    }
+    
     if (errorMsg) errorMsg.style.display = 'none';
     if (img) img.classList.remove('loaded');
     
     // Construct image path
-    // Using 1.jpg, 2.jpg, 3.jpg etc. (without "page-" prefix)
-    const imagePath = `PDF/${currentYear}/${currentPage}.jpg`;
-    console.log(`Loading image: ${imagePath}`);
+    // Using page-1.jpg, page-2.jpg etc.
+    const basePath = getBasePath();
+    const imagePath = `${basePath}${currentYear}/page-${currentPage}.jpg`;
+    
+    console.log(`Attempting to load image from: ${imagePath}`);
     
     // Test if image exists
     testImageExists(imagePath).then(exists => {
         if (exists) {
+            console.log(`Image exists at: ${imagePath}`);
             loadImageWithFallback(img, imagePath);
         } else {
-            showImageNotFound();
+            console.log(`Image not found at primary path: ${imagePath}`);
+            // Try alternative naming patterns
+            tryAlternativeImagePaths();
         }
     }).catch(error => {
         console.error('Error checking image:', error);
-        showImageNotFound();
+        tryAlternativeImagePaths();
     });
 }
 
@@ -313,17 +407,20 @@ function testImageExists(url) {
     return new Promise((resolve) => {
         const img = new Image();
         img.onload = function() {
+            console.log(`Image test passed for: ${url}`);
             resolve(true);
         };
         img.onerror = function() {
+            console.log(`Image test failed for: ${url}`);
             resolve(false);
         };
         img.src = url;
         
-        // Timeout after 3 seconds
+        // Timeout after 5 seconds
         setTimeout(() => {
+            console.log(`Image test timeout for: ${url}`);
             resolve(false);
-        }, 3000);
+        }, 5000);
     });
 }
 
@@ -331,70 +428,166 @@ function loadImageWithFallback(imgElement, imagePath) {
     const img = new Image();
     
     img.onload = function() {
+        console.log(`Image loaded successfully: ${imagePath}`);
+        
         // Set the image source
         imgElement.src = imagePath;
         imgElement.classList.add('loaded');
         
         // Hide loading spinner
         const spinner = document.getElementById('loadingSpinner');
-        if (spinner) spinner.style.display = 'none';
+        if (spinner) {
+            spinner.style.display = 'none';
+            console.log('Loading spinner hidden');
+        }
         
         isLoading = false;
         
-        console.log(`Image loaded successfully: ${imagePath}`);
+        // Log success
+        console.log(`Page ${currentPage} loaded successfully`);
     };
     
     img.onerror = function() {
+        console.log(`Failed to load image from: ${imagePath}`);
         // Try alternative paths
-        const alternativePaths = [
-            `PDF/${currentYear}/page-${currentPage}.jpg`,
-            `PDF/${currentYear}/${currentPage}.jpeg`,
-            `PDF/${currentYear}/${currentPage}.png`
-        ];
-        
-        tryAlternativePaths(imgElement, alternativePaths, 0);
+        tryAlternativeImagePaths();
     };
     
+    console.log(`Starting image load from: ${imagePath}`);
     img.src = imagePath;
 }
 
-function tryAlternativePaths(imgElement, paths, index) {
+function tryAlternativeImagePaths() {
+    console.log('Trying alternative image paths...');
+    
+    const imgElement = document.getElementById('projectImage');
+    const basePath = getBasePath();
+    
+    // Define all possible naming patterns
+    const alternativePaths = [
+        // Original pattern: page-1.jpg
+        `${basePath}${currentYear}/page-${currentPage}.jpg`,
+        // Pattern 2: 1.jpg (without page-)
+        `${basePath}${currentYear}/${currentPage}.jpg`,
+        // Pattern 3: page-1.jpeg
+        `${basePath}${currentYear}/page-${currentPage}.jpeg`,
+        // Pattern 4: 1.jpeg
+        `${basePath}${currentYear}/${currentPage}.jpeg`,
+        // Pattern 5: page-1.png
+        `${basePath}${currentYear}/page-${currentPage}.png`,
+        // Pattern 6: 1.png
+        `${basePath}${currentYear}/${currentPage}.png`,
+        // Pattern 7: Page-1.jpg (capital P)
+        `${basePath}${currentYear}/Page-${currentPage}.jpg`,
+        // Pattern 8: PAGE-1.JPG (uppercase)
+        `${basePath}${currentYear}/PAGE-${currentPage}.JPG`,
+    ];
+    
+    console.log('Alternative paths to try:', alternativePaths);
+    
+    // Try each path sequentially
+    tryPathSequentially(imgElement, alternativePaths, 0);
+}
+
+function tryPathSequentially(imgElement, paths, index) {
     if (index >= paths.length) {
+        console.log('All alternative paths failed, showing error');
         showImageNotFound();
         return;
     }
     
+    const currentPath = paths[index];
+    console.log(`Trying path ${index + 1}/${paths.length}: ${currentPath}`);
+    
     const testImg = new Image();
     testImg.onload = function() {
-        imgElement.src = paths[index];
+        console.log(`Success with alternative path: ${currentPath}`);
+        imgElement.src = currentPath;
         imgElement.classList.add('loaded');
         
         const spinner = document.getElementById('loadingSpinner');
         if (spinner) spinner.style.display = 'none';
         
         isLoading = false;
-        console.log(`Image loaded from alternative path: ${paths[index]}`);
+        
+        // Log which pattern worked
+        console.log(`Page ${currentPage} loaded from alternative path: ${currentPath}`);
     };
     
     testImg.onerror = function() {
-        tryAlternativePaths(imgElement, paths, index + 1);
+        console.log(`Failed with path: ${currentPath}`);
+        // Try next path
+        tryPathSequentially(imgElement, paths, index + 1);
     };
     
-    testImg.src = paths[index];
+    // Start loading the test image
+    testImg.src = currentPath;
 }
 
 function showImageNotFound() {
+    console.log('Showing image not found error');
+    
     const spinner = document.getElementById('loadingSpinner');
     const errorMsg = document.getElementById('errorMessage');
     const img = document.getElementById('projectImage');
     
-    if (spinner) spinner.style.display = 'none';
-    if (errorMsg) errorMsg.style.display = 'block';
+    if (spinner) {
+        spinner.style.display = 'none';
+        console.log('Loading spinner hidden');
+    }
+    
+    if (errorMsg) {
+        errorMsg.style.display = 'block';
+        console.log('Error message shown');
+    }
+    
     if (img) img.classList.remove('loaded');
     
     isLoading = false;
     
-    console.log(`Image not found for page ${currentPage}`);
+    console.log(`Image not found for page ${currentPage} of year ${currentYear}`);
+    
+    // Update error message with more helpful info
+    if (errorMsg) {
+        const errorText = errorMsg.querySelector('p');
+        if (errorText) {
+            errorText.innerHTML = `Image not found for page ${currentPage}.<br>Expected: pdf/${currentYear}/page-${currentPage}.jpg`;
+        }
+    }
+}
+
+function showErrorMessage(message) {
+    // Create a temporary error message
+    const errorDiv = document.createElement('div');
+    errorDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #f72585;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        z-index: 10000;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideInDown 0.3s ease;
+    `;
+    
+    errorDiv.innerHTML = `
+        <i class="fas fa-exclamation-circle"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(errorDiv);
+    
+    // Remove after 5 seconds
+    setTimeout(() => {
+        errorDiv.remove();
+    }, 5000);
 }
 
 // =============================================
@@ -455,6 +648,8 @@ function initializeProtection() {
     
     // Add CSS protection
     addCSSProtection();
+    
+    console.log('Protection initialized');
 }
 
 function addCSSProtection() {
@@ -496,11 +691,26 @@ function addCSSProtection() {
                 margin-top: 100px;
             }
         }
+        
+        /* Animation for error messages */
+        @keyframes slideInDown {
+            from {
+                transform: translate(-50%, -100%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
     `;
     document.head.appendChild(style);
+    console.log('CSS protection added');
 }
 
 function enableAdvancedProtection() {
+    console.log('Enabling advanced protection');
+    
     // Add protective overlay
     const overlay = document.getElementById('protectionOverlay');
     if (overlay) {
@@ -511,10 +721,13 @@ function enableAdvancedProtection() {
     if ('ontouchstart' in window) {
         document.addEventListener('touchmove', preventTouch, { passive: false });
         document.addEventListener('touchstart', preventTouch, { passive: false });
+        console.log('Touch protection enabled');
     }
 }
 
 function disableAdvancedProtection() {
+    console.log('Disabling advanced protection');
+    
     const overlay = document.getElementById('protectionOverlay');
     if (overlay) {
         overlay.style.display = 'none';
@@ -524,6 +737,7 @@ function disableAdvancedProtection() {
     if ('ontouchstart' in window) {
         document.removeEventListener('touchmove', preventTouch);
         document.removeEventListener('touchstart', preventTouch);
+        console.log('Touch protection disabled');
     }
 }
 
@@ -535,6 +749,8 @@ function preventTouch(e) {
 }
 
 function showProtectionMessage(message) {
+    console.log(`Protection message: ${message}`);
+    
     // Remove existing message
     const existing = document.querySelector('.protection-toast');
     if (existing) existing.remove();
@@ -542,15 +758,27 @@ function showProtectionMessage(message) {
     // Create new message
     const toast = document.createElement('div');
     toast.className = 'protection-toast';
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--accent);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: var(--shadow-md);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease;
+        font-size: 14px;
+        font-weight: 500;
+    `;
+    
     toast.innerHTML = `
-        <div style="position: fixed; top: 20px; right: 20px; background: var(--accent); 
-                    color: white; padding: 12px 20px; border-radius: 8px; 
-                    box-shadow: var(--shadow-md); z-index: 10000; 
-                    display: flex; align-items: center; gap: 10px; 
-                    animation: slideIn 0.3s ease; font-size: 14px; font-weight: 500;">
-            <i class="fas fa-shield-alt"></i>
-            <span>${message}</span>
-        </div>
+        <i class="fas fa-shield-alt"></i>
+        <span>${message}</span>
     `;
     
     document.body.appendChild(toast);
@@ -566,18 +794,29 @@ function showProtectionMessage(message) {
 // =============================================
 
 function testImageAccess() {
-    // Test if PDF folder exists by checking a common file
-    const testPath = 'PDF/2018/1.jpg';
+    console.log('Testing image access...');
+    
+    // Test if pdf folder exists by checking a common file
+    const basePath = getBasePath();
+    const testPath = `${basePath}2018/page-1.jpg`;
     const testImg = new Image();
     
     testImg.onload = function() {
-        console.log('PDF folder accessible - images should load correctly');
+        console.log('✓ Image access test PASSED');
+        console.log(`  Images should load from: ${testPath}`);
     };
     
     testImg.onerror = function() {
-        console.warn('PDF folder may not be accessible. Check folder structure:');
-        console.warn('Expected: PDF/2018/1.jpg, PDF/2018/2.jpg, etc.');
-        console.warn('Make sure folder names match exactly (case-sensitive)');
+        console.error('✗ Image access test FAILED');
+        console.warn(`  Cannot access: ${testPath}`);
+        console.warn('  Check:');
+        console.warn('  1. Folder exists: pdf/ (lowercase)');
+        console.warn('  2. Year folder exists: pdf/2018/');
+        console.warn('  3. Image exists: pdf/2018/page-1.jpg');
+        console.warn('  4. Case sensitivity: GitHub is case-sensitive!');
+        
+        // Show user-friendly warning
+        showErrorMessage('Warning: Images may not load. Check console for details.');
     };
     
     testImg.src = testPath;
@@ -621,4 +860,11 @@ window.addEventListener('unhandledrejection', function(e) {
     console.error('Unhandled promise rejection:', e.reason);
 });
 
-console.log('Accountancy Projects Viewer loaded successfully');
+// Log page load completion
+window.addEventListener('load', function() {
+    console.log('Page fully loaded and ready');
+    console.log('Current URL:', window.location.href);
+    console.log('Base path for images:', getBasePath());
+});
+
+console.log('Accountancy Projects Viewer script loaded successfully');
