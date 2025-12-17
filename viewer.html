@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Android/iOS specific meta tags -->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<!-- Disable translation -->
+<meta name="google" content="notranslate">
+    <title>Accountancy Projects Viewer</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="viewer-container">
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-book-open"></i>
+                <h1>Accountancy Projects</h1>
+            </div>
+            <div class="protection-badge">
+                <i class="fas fa-shield-alt"></i>
+                <span>Protected View Only</span>
+            </div>
+        </nav>
+        
+        <!-- Warning Reminder -->
+        <div style="background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); 
+                    padding: 20px; border-radius: var(--border-radius); 
+                    margin-bottom: 30px; border-left: 4px solid #ffc107;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <i class="fas fa-exclamation-circle" style="font-size: 1.5rem; color: #856404;"></i>
+                <div>
+                    <h3 style="margin: 0 0 5px 0; color: #856404;">Important Notice</h3>
+                    <p style="margin: 0; color: #856404;">
+                        Answers are not guaranteed to be perfect. Use as reference only.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Years Grid -->
+        <div class="years-grid">
+            <!-- Year cards will be dynamically generated here -->
+            <!-- Only 2018, 2019, 2022, 2023, 2024, 2025 will be shown -->
+        </div>
+        
+        <!-- Instructions -->
+        <div style="background: white; padding: 25px; border-radius: var(--border-radius); 
+                    box-shadow: var(--box-shadow); margin-top: 30px;">
+            <h3 style="color: var(--primary); margin-bottom: 15px;">
+                <i class="fas fa-info-circle"></i> How to Use
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div style="padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                    <i class="fas fa-mouse-pointer" style="color: var(--primary); margin-bottom: 10px;"></i>
+                    <h4>1. Select Year</h4>
+                    <p>Click on any available year to view that project</p>
+                </div>
+                <div style="padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                    <i class="fas fa-arrow-left" style="color: var(--primary); margin-bottom: 10px;"></i>
+                    <i class="fas fa-arrow-right" style="color: var(--primary); margin-bottom: 10px;"></i>
+                    <h4>2. Navigate Pages</h4>
+                    <p>Use arrow buttons or keyboard arrows to browse pages</p>
+                </div>
+                <div style="padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                    <i class="fas fa-ban" style="color: var(--danger); margin-bottom: 10px;"></i>
+                    <h4>3. Read Only</h4>
+                    <p>Content is protected. Downloading is disabled for academic integrity</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 50px; padding: 20px; color: var(--gray);">
+            <p>
+                <i class="fas fa-graduation-cap"></i> For Academic Reference Only • 
+                <i class="fas fa-lock"></i> Protected Content • 
+                <a href="index.html" style="color: var(--primary); text-decoration: none;">
+                    <i class="fas fa-undo"></i> Back to Warning
+                </a>
+            </p>
+        </div>
+    </div>
+    
+    <!-- Image Viewer Modal -->
+    <div class="image-viewer-modal" id="imageViewerModal">
+        <div class="viewer-header">
+            <h2 id="viewerTitle">Accountancy Project</h2>
+            <button class="btn-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="image-container">
+            <img src="" alt="Project Page" class="protected-image" id="projectImage" 
+                 oncontextmenu="return false" draggable="false">
+        </div>
+        
+        <div class="viewer-controls">
+            <button class="control-btn" id="prevPage" title="Previous Page">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            
+            <div class="page-indicator" id="pageIndicator">
+                Page 1 of 10
+            </div>
+            
+            <button class="control-btn" id="nextPage" title="Next Page">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
